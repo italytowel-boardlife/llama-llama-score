@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>라마 라마(Llama Llama) 점수 계산기</title>
+    <title>라마 라마(Llama Llama) 점수 계산기 - 컬러 에디션</title>
     <style>
         :root {
             --bg-color: #fdf6e3;
@@ -12,6 +12,15 @@
             --primary-hover: #c26143;
             --text-main: #333333;
             --border-color: #e2d8c3;
+            
+            /* 카드별 고유 색상 정의 */
+            --color-A: #e51a64;
+            --color-B: #b59f5e;
+            --color-C: #ffea95;
+            --color-D: #328b35;
+            --color-E: #328b35;
+            --color-F: #7a3f98;
+            --color-G: #b59f5e;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
@@ -23,27 +32,47 @@
         .section { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .section-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-bottom: 2px dashed var(--border-color); padding-bottom: 10px; color: var(--primary); }
 
-        /* Hand Input */
+        /* Hand Input 스타일 및 카드별 색상 지정 */
         .hand-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-        .card-counter { display: flex; flex-direction: column; align-items: center; background: #fdf6e3; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); width: 80px; }
-        .card-name { font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
-        .controls { display: flex; align-items: center; gap: 8px; }
-        .btn-ctrl { background: #e2d8c3; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
-        .btn-ctrl:hover { background: #d4c7ad; }
-        .count-val { font-size: 1.1rem; font-weight: bold; width: 16px; text-align: center; }
+        .card-counter { display: flex; flex-direction: column; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); width: 90px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-name { font-weight: bold; font-size: 1.5rem; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        
+        /* 카드 타입별 테마 클래스 (밝은 색인 C카드만 검은 글씨, 나머지는 흰 글씨) */
+        .theme-A { background-color: var(--color-A); color: white; }
+        .theme-B { background-color: var(--color-B); color: white; }
+        .theme-C { background-color: var(--color-C); color: #222222; }
+        .theme-D { background-color: var(--color-D); color: white; }
+        .theme-E { background-color: var(--color-E); color: white; }
+        .theme-F { background-color: var(--color-F); color: white; }
+        .theme-G { background-color: var(--color-G); color: white; }
+
+        .controls { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.25); padding: 4px 8px; border-radius: 20px; }
+        /* C카드는 배경이 밝으므로 컨트롤 배경을 어둡게 처리 */
+        .theme-C .controls { background: rgba(0,0,0,0.08); }
+
+        .btn-ctrl { background: rgba(255,255,255,0.8); border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #333; transition: 0.1s; }
+        .btn-ctrl:hover { background: rgba(255,255,255,1); transform: scale(1.1); }
+        .count-val { font-size: 1.2rem; font-weight: bold; width: 20px; text-align: center; }
         
         .total-tracker { text-align: center; margin-top: 15px; font-weight: bold; font-size: 1.1rem; }
         .total-tracker.error { color: #ef4444; }
         .total-tracker.success { color: #10b981; }
 
-        /* Goals Input */
-        .goals-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-        .goal-label { display: flex; align-items: center; gap: 5px; background: #fdf6e3; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border-color); cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .goal-label:hover { background: #f0e6d2; }
-        .goal-label input { accent-color: var(--primary); transform: scale(1.2); }
+        /* Goals Input 스타일 및 카드별 색상 지정 */
+        .goals-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .goal-label { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 24px; border: 2px solid transparent; cursor: pointer; font-weight: bold; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .goal-label:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* 체크박스가 선택되었을 때 테두리 강조 효과 */
+        .goal-label has-checked,
+        .goal-label:has(input:checked) {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(217, 119, 87, 0.4);
+        }
+        .goal-label input { accent-color: var(--primary); transform: scale(1.2); cursor: pointer; }
 
         /* Calculation Result */
-        .calc-result { text-align: center; font-size: 1.5rem; font-weight: bold; margin: 20px 0; padding: 15px; background: #fff5f2; border-radius: 8px; color: var(--primary); }
+        .calc-result { text-align: center; font-size: 1.5rem; font-weight: bold; margin: 20px 0; padding: 15px; background: #fff5f2; border-radius: 8px; color: var(--primary); border: 1px solid var(--border-color); }
         
         /* Add to Player */
         .player-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
@@ -65,7 +94,7 @@
     <div class="container">
         <h1>🦙 라마 라마 점수 계산기</h1>
         
-        <!-- 손패 입력 -->
+        <!-- 손패 입력 (색상 적용) -->
         <div class="section">
             <div class="section-title">1. 내 손패 (정확히 7장)</div>
             <div class="hand-grid">
@@ -73,7 +102,7 @@
                     const cards = ['A','B','C','D','E','F','G'];
                     cards.forEach(c => {
                         document.write(`
-                            <div class="card-counter">
+                            <div class="card-counter theme-${c}">
                                 <div class="card-name">${c}</div>
                                 <div class="controls">
                                     <button class="btn-ctrl" onclick="adj('${c}', -1)">-</button>
@@ -88,14 +117,14 @@
             <div class="total-tracker error" id="total-tracker">현재 선택된 카드: 0장 / 7장</div>
         </div>
 
-        <!-- 목표 카드 선택 -->
+        <!-- 목표 카드 선택 (색상 적용) -->
         <div class="section">
             <div class="section-title">2. 이번 라운드 목표 카드 (공개된 카드 선택)</div>
             <div class="goals-grid">
                 <script>
                     cards.forEach(c => {
                         document.write(`
-                            <label class="goal-label">
+                            <label class="goal-label theme-${c}">
                                 <input type="checkbox" class="goal-cb" value="${c}" onchange="updateCalc()"> ${c} 카드
                             </label>
                         `);
@@ -128,7 +157,6 @@
                     <th>Player 3</th>
                     <th>Player 4</th>
                 </tr>
-                <!-- JS에서 생성 -->
             </table>
         </div>
     </div>
@@ -141,12 +169,12 @@
             3: [0, 0, 0, 0],
             4: [0, 0, 0, 0]
         };
-        let currentRound = { 1:0, 2:0, 3:0, 4:0 }; // 각 플레이어의 진행 라운드
+        let currentRound = { 1:0, 2:0, 3:0, 4:0 };
 
         function adj(card, val) {
             let currentTotal = Object.values(hand).reduce((a,b) => a+b, 0);
-            if (val > 0 && currentTotal >= 7) return; // 7장 초과 방지
-            if (val < 0 && hand[card] <= 0) return; // 0 미만 방지
+            if (val > 0 && currentTotal >= 7) return; 
+            if (val < 0 && hand[card] <= 0) return; 
             
             hand[card] += val;
             document.getElementById(`cnt-${card}`).innerText = hand[card];
@@ -168,7 +196,6 @@
                 tracker.innerText += ' (7장을 맞춰주세요)';
             }
 
-            // Calculate Score
             let score = 0;
             if (isReady) {
                 const goals = Array.from(document.querySelectorAll('.goal-cb:checked')).map(cb => cb.value);
@@ -194,7 +221,6 @@
                 }
                 if (goals.includes('E')) {
                     score += h.E * 5;
-                    // B, B, D, D (B 2장, D 2장)
                     score += Math.floor(Math.min(h.B/2, h.D/2)) * 20;
                 }
                 if (goals.includes('F')) {
@@ -209,9 +235,7 @@
             
             document.getElementById('current-score').innerText = score;
 
-            // 버튼 활성화
             for (let i=1; i<=4; i++) {
-                // 이미 4라운드까지 기록했으면 비활성화
                 document.getElementById(`btn-p${i}`).disabled = !isReady || currentRound[i] >= 4;
             }
         }
@@ -224,7 +248,6 @@
                 currentRound[player]++;
                 renderTable();
                 
-                // 점수 초기화
                 hand = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
                 cards.forEach(c => document.getElementById(`cnt-${c}`).innerText = 0);
                 document.querySelectorAll('.goal-cb').forEach(cb => cb.checked = false);
@@ -234,7 +257,6 @@
 
         function renderTable() {
             let table = document.getElementById('score-table');
-            // Header 보존
             let html = `
                 <tr>
                     <th>라운드</th>
@@ -266,7 +288,6 @@
             
             table.innerHTML = html;
 
-            // 100점 이상 체크
             if (Object.values(totals).some(t => t >= 100)) {
                 setTimeout(() => alert("🎉 누적 100점 이상 플레이어가 발생하여 게임이 종료되었습니다!"), 100);
             }
