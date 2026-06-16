@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>라마 라마(Llama Llama) 점수 계산기 - 목표 중복 에디션</title>
+    <title>라마 라마(Llama Llama) 점수 계산기 - 목표별 득점 에디션</title>
     <style>
         :root {
             --bg-color: #fdf6e3;
@@ -66,6 +66,20 @@
         .btn-ctrl { background: rgba(255,255,255,0.8); border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #333; font-size: 1rem; }
         .count-val { font-size: 1.1rem; font-weight: bold; width: 16px; text-align: center; }
         
+        /* 개별 목표 카드 득점 표시 디자인 */
+        .goal-score-display {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            background: rgba(255,255,255,0.3);
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-align: center;
+            width: 90%;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .theme-C .goal-score-display { background: rgba(0,0,0,0.08); }
+
         .total-tracker { text-align: center; margin-top: 12px; font-weight: bold; font-size: 1rem; }
         .total-tracker.error { color: #ef4444; }
         .total-tracker.success { color: #10b981; }
@@ -84,17 +98,9 @@
         .winner { color: #ef4444; font-weight: bold; }
 
         @media (min-width: 600px) {
-            .card-counter {
-                width: 100px;
-                font-size: 1rem;
-            }
-            .player-actions {
-                display: flex;
-                justify-content: center;
-            }
-            .btn-player {
-                padding: 10px 20px;
-            }
+            .card-counter { width: 100px; font-size: 1rem; }
+            .player-actions { display: flex; justify-content: center; }
+            .btn-player { padding: 10px 20px; }
         }
     </style>
 </head>
@@ -125,7 +131,7 @@
             <div class="total-tracker error" id="hand-tracker">현재 선택된 카드: 0장 / 7장</div>
         </div>
 
-        <!-- 2. 목표 카드 선택 구역 (중복 선택 기능 추가) -->
+        <!-- 2. 목표 카드 선택 구역 (개별 득점 표시 추가) -->
         <div class="section">
             <div class="section-title">2. 이번 라운드 목표 카드 (최대 4장, 중복 가능)</div>
             <div class="goals-grid">
@@ -139,6 +145,7 @@
                                     <span class="count-val" id="goal-cnt-${c}">0</span>
                                     <button class="btn-ctrl" onclick="adjGoal('${c}', 1)">+</button>
                                 </div>
+                                <div class="goal-score-display" id="score-display-${c}">0점</div>
                             </div>
                         `);
                     });
@@ -150,7 +157,7 @@
         <!-- 3. 결과 및 기록 구역 -->
         <div class="section">
             <div class="section-title">3. 점수 계산 및 기록</div>
-            <div class="calc-result">현재 조합 점수: <span id="current-score">0</span>점</div>
+            <div class="calc-result">총 조합 점수: <span id="current-score">0</span>점</div>
             
             <div class="player-actions">
                 <button class="btn-player" id="btn-p1" onclick="addScore(1)" disabled>P1 기록</button>
@@ -237,51 +244,46 @@
             }
 
             let isReady = handReady && goalReady;
-            let score = 0;
+            let individualScores = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
+            let totalScore = 0;
             
-            if (isReady) {
+            // 손패 7장이 맞춰졌을 때만 각 목표카드가 기여하는 점수를 계산 (목표카드 선택 여부와 관계없이 잠재 점수 기반 계산 후, 선택 수량만큼 곱함)
+            if (handReady) {
                 const h = hand;
 
-                if (goals.A > 0) {
-                    let sA = h.A * 1;
-                    if (h.A>=1 && h.B>=1 && h.C>=1 && h.D>=1 && h.E>=1 && h.F>=1 && h.G>=1) sA += 50;
-                    score += sA * goals.A;
-                }
-                if (goals.B > 0) {
-                    let sB = h.B * 2;
-                    sB += Math.floor(Math.min(h.A/2, h.C/2)) * 15;
-                    score += sB * goals.B;
-                }
-                if (goals.C > 0) {
-                    let sC = h.C * 3;
-                    sC += Math.floor(Math.min(h.A/2, h.B/2)) * 10;
-                    score += sC * goals.C;
-                }
-                if (goals.D > 0) {
-                    let sD = h.D * 4;
-                    sD += Math.min(h.A, h.G) * 5;
-                    sD += Math.min(h.C, h.E) * 5;
-                    sD += Math.min(h.B, h.F) * 5;
-                    score += sD * goals.D;
-                }
-                if (goals.E > 0) {
-                    let sE = h.E * 5;
-                    sE += Math.floor(Math.min(h.B/2, h.D/2)) * 20;
-                    score += sE * goals.E;
-                }
-                if (goals.F > 0) {
-                    let sF = h.F * 6;
-                    sF += Math.floor(h.A/6) * 30;
-                    score += sF * goals.F;
-                }
-                if (goals.G > 0) {
-                    let sG = Math.floor(h.A/2) * 7;
-                    sG += Math.min(h.A, h.B, h.C, h.D, h.E, h.F) * 30;
-                    score += sG * goals.G;
-                }
+                let pA = h.A * 1 + ((h.A>=1 && h.B>=1 && h.C>=1 && h.D>=1 && h.E>=1 && h.F>=1 && h.G>=1) ? 50 : 0);
+                individualScores.A = pA * goals.A;
+
+                let pB = h.B * 2 + Math.floor(Math.min(h.A/2, h.C/2)) * 15;
+                individualScores.B = pB * goals.B;
+
+                let pC = h.C * 3 + Math.floor(Math.min(h.A/2, h.B/2)) * 10;
+                individualScores.C = pC * goals.C;
+
+                let pD = h.D * 4 + Math.min(h.A, h.G) * 5 + Math.min(h.C, h.E) * 5 + Math.min(h.B, h.F) * 5;
+                individualScores.D = pD * goals.D;
+
+                let pE = h.E * 5 + Math.floor(Math.min(h.B/2, h.D/2)) * 20;
+                individualScores.E = pE * goals.E;
+
+                let pF = h.F * 6 + Math.floor(h.A/6) * 30;
+                individualScores.F = pF * goals.F;
+
+                let pG = Math.floor(h.A/2) * 7 + Math.min(h.A, h.B, h.C, h.D, h.E, h.F) * 30;
+                individualScores.G = pG * goals.G;
+            }
+
+            // 개별 카드 UI 업데이트
+            cards.forEach(c => {
+                document.getElementById(`score-display-${c}`).innerText = individualScores[c] + "점";
+            });
+
+            // 총 점수 합산
+            if (isReady) {
+                totalScore = Object.values(individualScores).reduce((a,b) => a+b, 0);
             }
             
-            document.getElementById('current-score').innerText = score;
+            document.getElementById('current-score').innerText = totalScore;
 
             for (let i=1; i<=4; i++) {
                 document.getElementById(`btn-p${i}`).disabled = !isReady || currentRound[i] >= 4;
