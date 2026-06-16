@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>라마 라마(Llama Llama) 점수 계산기 - 목표별 득점 에디션</title>
+    <title>라마 라마(Llama Llama) 점수 계산기</title>
     <style>
         :root {
             --bg-color: #fdf6e3;
@@ -11,8 +11,13 @@
             --primary: #d97757;
             --primary-hover: #c26143;
             --text-main: #333333;
+            --text-sub: #6b6254;
             --border-color: #e2d8c3;
-            
+            --danger: #ef4444;
+            --success: #10b981;
+            --soft-primary: #fff5f2;
+            --shadow: 0 4px 10px rgba(0,0,0,0.06);
+
             --color-A: #e51a64;
             --color-B: #f26335;
             --color-C: #ffea95;
@@ -22,36 +27,127 @@
             --color-G: #b59f5e;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 15px; }
-        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-        
-        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; font-size: 1.8rem; }
-        
-        .section { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .section-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 12px; border-bottom: 2px dashed var(--border-color); padding-bottom: 8px; color: var(--primary); }
-
-        .hand-grid, .goals-grid { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-            justify-content: center; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
         }
 
-        .card-counter { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 10px 5px; 
-            border-radius: 10px; 
-            border: 1px solid rgba(0,0,0,0.1); 
-            width: calc(25% - 8px); 
-            min-width: 72px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 14px;
+            word-break: keep-all;
         }
-        
-        .card-name { font-weight: bold; font-size: 1.3rem; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin: 4px 0 2px;
+            font-size: clamp(1.45rem, 5vw, 2rem);
+            line-height: 1.25;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 1.08rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            align-items: end;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 1rem;
+            color: var(--text-main);
+            background: #fffdfa;
+            outline: none;
+        }
+
+        select:focus,
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(217,119,87,0.16);
+        }
+
+        .settings-note {
+            margin-top: 10px;
+            color: var(--text-sub);
+            font-size: 0.84rem;
+            line-height: 1.45;
+        }
+
+        .hand-grid,
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .card-counter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            min-width: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+        }
+
+        .card-name {
+            font-weight: 900;
+            font-size: clamp(1.2rem, 4vw, 1.45rem);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+            line-height: 1;
+        }
+
         .theme-A { background-color: var(--color-A); color: white; }
         .theme-B { background-color: var(--color-B); color: white; }
         .theme-C { background-color: var(--color-C); color: #222222; }
@@ -60,294 +156,632 @@
         .theme-F { background-color: var(--color-F); color: white; }
         .theme-G { background-color: var(--color-G); color: white; }
 
-        .controls { display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.25); padding: 2px 6px; border-radius: 20px; }
-        .theme-C .controls { background: rgba(0,0,0,0.08); }
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.25);
+            padding: 4px 6px;
+            border-radius: 999px;
+            width: 100%;
+            max-width: 96px;
+        }
 
-        .btn-ctrl { background: rgba(255,255,255,0.8); border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #333; font-size: 1rem; }
-        .count-val { font-size: 1.1rem; font-weight: bold; width: 16px; text-align: center; }
-        
-        /* 개별 목표 카드 득점 표시 디자인 */
-        .goal-score-display {
-            margin-top: 8px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            background: rgba(255,255,255,0.3);
-            padding: 4px 8px;
-            border-radius: 12px;
+        .theme-C .controls {
+            background: rgba(0,0,0,0.08);
+        }
+
+        .btn-ctrl {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 1.05rem;
+            line-height: 1;
+            touch-action: manipulation;
+        }
+
+        .btn-ctrl:active {
+            transform: scale(0.96);
+        }
+
+        .count-val {
+            font-size: 1.1rem;
+            font-weight: 900;
+            min-width: 20px;
             text-align: center;
-            width: 90%;
+        }
+
+        .goal-score-display {
+            font-size: 0.9rem;
+            font-weight: 900;
+            background: rgba(255,255,255,0.3);
+            padding: 5px 7px;
+            border-radius: 999px;
+            text-align: center;
+            width: 100%;
+            max-width: 90px;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
-        .theme-C .goal-score-display { background: rgba(0,0,0,0.08); }
 
-        .total-tracker { text-align: center; margin-top: 12px; font-weight: bold; font-size: 1rem; }
-        .total-tracker.error { color: #ef4444; }
-        .total-tracker.success { color: #10b981; }
+        .theme-C .goal-score-display {
+            background: rgba(0,0,0,0.08);
+        }
 
-        .calc-result { text-align: center; font-size: 1.4rem; font-weight: bold; margin: 15px 0; padding: 12px; background: #fff5f2; border-radius: 8px; color: var(--primary); border: 1px solid var(--border-color); }
-        
-        .player-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .btn-player { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.95rem; text-align: center; }
-        .btn-player:disabled { background: #a3a3a3; cursor: not-allowed; }
+        .total-tracker {
+            text-align: center;
+            margin-top: 12px;
+            font-weight: 800;
+            font-size: 0.96rem;
+            line-height: 1.35;
+        }
 
-        .table-wrapper { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; text-align: center; min-width: 450px; }
-        th, td { border: 1px solid var(--border-color); padding: 8px; font-size: 0.9rem; }
-        th { background: #fdf6e3; color: var(--primary); }
-        .total-row { font-weight: bold; background: #fff5f2; }
-        .winner { color: #ef4444; font-weight: bold; }
+        .total-tracker.error { color: var(--danger); }
+        .total-tracker.success { color: var(--success); }
 
-        @media (min-width: 600px) {
-            .card-counter { width: 100px; font-size: 1rem; }
-            .player-actions { display: flex; justify-content: center; }
-            .btn-player { padding: 10px 20px; }
+        .calc-result {
+            text-align: center;
+            font-size: clamp(1.35rem, 5vw, 1.75rem);
+            font-weight: 900;
+            margin: 4px 0 12px;
+            padding: 14px;
+            background: var(--soft-primary);
+            border-radius: 12px;
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .player-actions {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .utility-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-player,
+        .btn-sub,
+        .btn-danger {
+            border: none;
+            padding: 12px 10px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-align: center;
+            touch-action: manipulation;
+        }
+
+        .btn-player {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-player:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .btn-player:disabled,
+        .btn-sub:disabled {
+            background: #b8b1a6;
+            cursor: not-allowed;
+            color: #fff;
+        }
+
+        .btn-sub {
+            background: #f4e7d1;
+            color: #6b4b34;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-sub:active,
+        .btn-danger:active,
+        .btn-player:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .status-line {
+            margin-top: 10px;
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.88rem;
+            min-height: 1.2em;
+            line-height: 1.35;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            min-width: 420px;
+            background: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: 9px 8px;
+            font-size: 0.92rem;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #fdf6e3;
+            color: var(--primary);
+            font-weight: 900;
+            position: sticky;
+            top: 0;
+        }
+
+        .total-row {
+            font-weight: 900;
+            background: var(--soft-primary);
+        }
+
+        .winner {
+            color: var(--danger);
+            font-weight: 900;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                gap: 11px;
+            }
+
+            .section {
+                padding: 13px 11px;
+                border-radius: 13px;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 9px;
+            }
+
+            .hand-grid,
+            .goals-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .card-counter {
+                padding: 10px 5px;
+            }
+
+            .player-actions {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .utility-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-player,
+            .btn-sub,
+            .btn-danger {
+                padding: 13px 10px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hand-grid,
+            .goals-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .controls {
+                max-width: none;
+                padding: 4px 5px;
+                gap: 4px;
+            }
+
+            .btn-ctrl {
+                width: 30px;
+                height: 30px;
+            }
+
+            .goal-score-display {
+                max-width: none;
+                font-size: 0.84rem;
+            }
+
+            table {
+                min-width: 360px;
+            }
+
+            th,
+            td {
+                padding: 8px 6px;
+                font-size: 0.86rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🦙 라마 라마 점수 계산기</h1>
-        
-        <!-- 1. 손패 입력 구역 -->
+        <p class="subtitle">플레이어 수, 라운드 수를 선택하고 점수를 기록하세요.</p>
+
+        <div class="section">
+            <div class="section-title">0. 게임 설정</div>
+            <div class="settings-grid">
+                <div class="field">
+                    <label for="player-count">플레이어 수</label>
+                    <select id="player-count" onchange="changePlayerCount(this.value)">
+                        <option value="2">2명</option>
+                        <option value="3">3명</option>
+                        <option value="4" selected>4명</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="round-limit">라운드 수</label>
+                    <input id="round-limit" type="number" min="1" max="20" value="4" onchange="changeRoundLimit(this.value)">
+                </div>
+            </div>
+            <p class="settings-note">설정을 변경하면 현재까지 기록한 점수는 초기화됩니다. 손패와 목표 카드 입력값은 그대로 유지됩니다.</p>
+        </div>
+
         <div class="section">
             <div class="section-title">1. 내 손패 (정확히 7장)</div>
-            <div class="hand-grid">
-                <script>
-                    const cards = ['A','B','C','D','E','F','G'];
-                    cards.forEach(c => {
-                        document.write(`
-                            <div class="card-counter theme-${c}">
-                                <div class="card-name">${c}</div>
-                                <div class="controls">
-                                    <button class="btn-ctrl" onclick="adjHand('${c}', -1)">-</button>
-                                    <span class="count-val" id="hand-cnt-${c}">0</span>
-                                    <button class="btn-ctrl" onclick="adjHand('${c}', 1)">+</button>
-                                </div>
-                            </div>
-                        `);
-                    });
-                </script>
-            </div>
+            <div class="hand-grid" id="hand-grid"></div>
             <div class="total-tracker error" id="hand-tracker">현재 선택된 카드: 0장 / 7장</div>
         </div>
 
-        <!-- 2. 목표 카드 선택 구역 (개별 득점 표시 추가) -->
         <div class="section">
             <div class="section-title">2. 이번 라운드 목표 카드 (최대 4장, 중복 가능)</div>
-            <div class="goals-grid">
-                <script>
-                    cards.forEach(c => {
-                        document.write(`
-                            <div class="card-counter theme-${c}">
-                                <div class="card-name">${c}</div>
-                                <div class="controls">
-                                    <button class="btn-ctrl" onclick="adjGoal('${c}', -1)">-</button>
-                                    <span class="count-val" id="goal-cnt-${c}">0</span>
-                                    <button class="btn-ctrl" onclick="adjGoal('${c}', 1)">+</button>
-                                </div>
-                                <div class="goal-score-display" id="score-display-${c}">0점</div>
-                            </div>
-                        `);
-                    });
-                </script>
-            </div>
+            <div class="goals-grid" id="goals-grid"></div>
             <div class="total-tracker error" id="goal-tracker">현재 선택된 목표 카드: 0장 / 4장</div>
         </div>
 
-        <!-- 3. 결과 및 기록 구역 -->
         <div class="section">
             <div class="section-title">3. 점수 계산 및 기록</div>
             <div class="calc-result">총 조합 점수: <span id="current-score">0</span>점</div>
-            
-            <div class="player-actions">
-                <button class="btn-player" id="btn-p1" onclick="addScore(1)" disabled>P1 기록</button>
-                <button class="btn-player" id="btn-p2" onclick="addScore(2)" disabled>P2 기록</button>
-                <button class="btn-player" id="btn-p3" onclick="addScore(3)" disabled>P3 기록</button>
-                <button class="btn-player" id="btn-p4" onclick="addScore(4)" disabled>P4 기록</button>
+            <div class="player-actions" id="player-actions"></div>
+            <div class="utility-actions">
+                <button class="btn-sub" id="btn-undo" onclick="undoLastScore()" disabled>마지막 기록 취소</button>
+                <button class="btn-sub" onclick="resetInputs()">입력 초기화</button>
+                <button class="btn-danger" onclick="resetAll()">전체 초기화</button>
             </div>
+            <div class="status-line" id="status-line"></div>
         </div>
 
-        <!-- 점수판 구역 -->
         <div class="section">
             <div class="section-title">📊 전체 점수판 (100점 이상 종료)</div>
             <div class="table-wrapper">
-                <table id="score-table">
-                    <tr>
-                        <th>라운드</th>
-                        <th>Player 1</th>
-                        <th>Player 2</th>
-                        <th>Player 3</th>
-                        <th>Player 4</th>
-                    </tr>
-                </table>
+                <table id="score-table"></table>
             </div>
         </div>
     </div>
 
     <script>
-        let hand = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
-        let goals = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
-        let scores = {
-            1: [0, 0, 0, 0],
-            2: [0, 0, 0, 0],
-            3: [0, 0, 0, 0],
-            4: [0, 0, 0, 0]
-        };
-        let currentRound = { 1:0, 2:0, 3:0, 4:0 };
+        const cards = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        const emptyCardSet = () => ({ A:0, B:0, C:0, D:0, E:0, F:0, G:0 });
+
+        let hand = emptyCardSet();
+        let goals = emptyCardSet();
+        let playerCount = 4;
+        let roundLimit = 4;
+        let scores = {};
+        let currentRound = {};
+        let scoreHistory = [];
+        let gameEndedAlertShown = false;
+
+        function init() {
+            buildCardInputs();
+            initScores();
+            renderPlayerButtons();
+            renderTable();
+            updateCalc();
+        }
+
+        function buildCardInputs() {
+            const handGrid = document.getElementById('hand-grid');
+            const goalsGrid = document.getElementById('goals-grid');
+
+            handGrid.innerHTML = cards.map(c => `
+                <div class="card-counter theme-${c}">
+                    <div class="card-name">${c}</div>
+                    <div class="controls">
+                        <button class="btn-ctrl" type="button" onclick="adjHand('${c}', -1)" aria-label="손패 ${c} 감소">-</button>
+                        <span class="count-val" id="hand-cnt-${c}">0</span>
+                        <button class="btn-ctrl" type="button" onclick="adjHand('${c}', 1)" aria-label="손패 ${c} 증가">+</button>
+                    </div>
+                </div>
+            `).join('');
+
+            goalsGrid.innerHTML = cards.map(c => `
+                <div class="card-counter theme-${c}">
+                    <div class="card-name">${c}</div>
+                    <div class="controls">
+                        <button class="btn-ctrl" type="button" onclick="adjGoal('${c}', -1)" aria-label="목표 ${c} 감소">-</button>
+                        <span class="count-val" id="goal-cnt-${c}">0</span>
+                        <button class="btn-ctrl" type="button" onclick="adjGoal('${c}', 1)" aria-label="목표 ${c} 증가">+</button>
+                    </div>
+                    <div class="goal-score-display" id="score-display-${c}">0점</div>
+                </div>
+            `).join('');
+        }
+
+        function initScores() {
+            scores = {};
+            currentRound = {};
+            scoreHistory = [];
+            gameEndedAlertShown = false;
+
+            for (let p = 1; p <= 4; p++) {
+                scores[p] = Array(roundLimit).fill(null);
+                currentRound[p] = 0;
+            }
+        }
+
+        function changePlayerCount(value) {
+            playerCount = Number(value);
+            resetScoresOnly('플레이어 수가 변경되어 점수 기록을 초기화했습니다.');
+        }
+
+        function changeRoundLimit(value) {
+            const parsed = Number(value);
+            if (!Number.isInteger(parsed) || parsed < 1) {
+                roundLimit = 1;
+            } else if (parsed > 20) {
+                roundLimit = 20;
+            } else {
+                roundLimit = parsed;
+            }
+
+            document.getElementById('round-limit').value = roundLimit;
+            resetScoresOnly('라운드 수가 변경되어 점수 기록을 초기화했습니다.');
+        }
+
+        function resetScoresOnly(message = '') {
+            initScores();
+            renderPlayerButtons();
+            renderTable();
+            updateCalc();
+            setStatus(message);
+        }
+
+        function renderPlayerButtons() {
+            const wrap = document.getElementById('player-actions');
+            wrap.style.gridTemplateColumns = playerCount <= 2 ? 'repeat(2, minmax(0, 1fr))' : `repeat(${playerCount}, minmax(0, 1fr))`;
+            wrap.innerHTML = '';
+
+            for (let p = 1; p <= playerCount; p++) {
+                wrap.innerHTML += `<button class="btn-player" id="btn-p${p}" onclick="addScore(${p})" disabled>P${p} 기록</button>`;
+            }
+        }
+
+        function totalCards(target) {
+            return Object.values(target).reduce((sum, value) => sum + value, 0);
+        }
 
         function adjHand(card, val) {
-            let currentTotal = Object.values(hand).reduce((a,b) => a+b, 0);
-            if (val > 0 && currentTotal >= 7) return; 
-            if (val < 0 && hand[card] <= 0) return; 
-            
+            const currentTotal = totalCards(hand);
+            if (val > 0 && currentTotal >= 7) return;
+            if (val < 0 && hand[card] <= 0) return;
+
             hand[card] += val;
             document.getElementById(`hand-cnt-${card}`).innerText = hand[card];
             updateCalc();
         }
 
         function adjGoal(card, val) {
-            let currentTotal = Object.values(goals).reduce((a,b) => a+b, 0);
-            if (val > 0 && currentTotal >= 4) return; 
-            if (val < 0 && goals[card] <= 0) return; 
-            
+            const currentTotal = totalCards(goals);
+            if (val > 0 && currentTotal >= 4) return;
+            if (val < 0 && goals[card] <= 0) return;
+
             goals[card] += val;
             document.getElementById(`goal-cnt-${card}`).innerText = goals[card];
             updateCalc();
         }
 
+        function calculateIndividualScores() {
+            const individualScores = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
+            const handReady = totalCards(hand) === 7;
+            if (!handReady) return individualScores;
+
+            const h = hand;
+
+            const pA = h.A * 1 + ((h.A >= 1 && h.B >= 1 && h.C >= 1 && h.D >= 1 && h.E >= 1 && h.F >= 1 && h.G >= 1) ? 50 : 0);
+            individualScores.A = pA * goals.A;
+
+            const pB = h.B * 2 + Math.floor(Math.min(h.A / 2, h.C / 2)) * 15;
+            individualScores.B = pB * goals.B;
+
+            const pC = h.C * 3 + Math.floor(Math.min(h.A / 2, h.B / 2)) * 10;
+            individualScores.C = pC * goals.C;
+
+            const pD = h.D * 4 + Math.min(h.A, h.G) * 5 + Math.min(h.C, h.E) * 5 + Math.min(h.B, h.F) * 5;
+            individualScores.D = pD * goals.D;
+
+            const pE = h.E * 5 + Math.floor(Math.min(h.B / 2, h.D / 2)) * 20;
+            individualScores.E = pE * goals.E;
+
+            const pF = h.F * 6 + Math.floor(h.A / 6) * 30;
+            individualScores.F = pF * goals.F;
+
+            const pG = Math.floor(h.A / 2) * 7 + Math.min(h.A, h.B, h.C, h.D, h.E, h.F) * 30;
+            individualScores.G = pG * goals.G;
+
+            return individualScores;
+        }
+
         function updateCalc() {
-            let totalHand = Object.values(hand).reduce((a,b) => a+b, 0);
-            let totalGoals = Object.values(goals).reduce((a,b) => a+b, 0);
-            
-            let handTracker = document.getElementById('hand-tracker');
-            let goalTracker = document.getElementById('goal-tracker');
-            
-            handTracker.innerText = `현재 선택된 카드: ${totalHand}장 / 7장`;
-            goalTracker.innerText = `현재 선택된 목표 카드: ${totalGoals}장 / 4장`;
-            
-            let handReady = totalHand === 7;
-            if (handReady) {
-                handTracker.className = 'total-tracker success';
-                handTracker.innerText += ' (손패 완료)';
-            } else {
-                handTracker.className = 'total-tracker error';
-                handTracker.innerText += ' (7장을 맞춰주세요)';
-            }
+            const totalHand = totalCards(hand);
+            const totalGoals = totalCards(goals);
+            const handReady = totalHand === 7;
+            const goalReady = totalGoals > 0 && totalGoals <= 4;
+            const isReady = handReady && goalReady;
 
-            let goalReady = totalGoals > 0 && totalGoals <= 4;
-            if (goalReady) {
-                goalTracker.className = 'total-tracker success';
-                goalTracker.innerText += ' (선택 완료)';
-            } else {
-                goalTracker.className = 'total-tracker error';
-                goalTracker.innerText += ' (최대 4장 선택 가능)';
-            }
+            const handTracker = document.getElementById('hand-tracker');
+            const goalTracker = document.getElementById('goal-tracker');
 
-            let isReady = handReady && goalReady;
-            let individualScores = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
-            let totalScore = 0;
-            
-            // 손패 7장이 맞춰졌을 때만 각 목표카드가 기여하는 점수를 계산 (목표카드 선택 여부와 관계없이 잠재 점수 기반 계산 후, 선택 수량만큼 곱함)
-            if (handReady) {
-                const h = hand;
+            handTracker.className = handReady ? 'total-tracker success' : 'total-tracker error';
+            handTracker.innerText = handReady
+                ? `현재 선택된 카드: ${totalHand}장 / 7장 (손패 완료)`
+                : `현재 선택된 카드: ${totalHand}장 / 7장 (7장을 맞춰주세요)`;
 
-                let pA = h.A * 1 + ((h.A>=1 && h.B>=1 && h.C>=1 && h.D>=1 && h.E>=1 && h.F>=1 && h.G>=1) ? 50 : 0);
-                individualScores.A = pA * goals.A;
+            goalTracker.className = goalReady ? 'total-tracker success' : 'total-tracker error';
+            goalTracker.innerText = goalReady
+                ? `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (선택 완료)`
+                : `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (1~4장을 선택해주세요)`;
 
-                let pB = h.B * 2 + Math.floor(Math.min(h.A/2, h.C/2)) * 15;
-                individualScores.B = pB * goals.B;
-
-                let pC = h.C * 3 + Math.floor(Math.min(h.A/2, h.B/2)) * 10;
-                individualScores.C = pC * goals.C;
-
-                let pD = h.D * 4 + Math.min(h.A, h.G) * 5 + Math.min(h.C, h.E) * 5 + Math.min(h.B, h.F) * 5;
-                individualScores.D = pD * goals.D;
-
-                let pE = h.E * 5 + Math.floor(Math.min(h.B/2, h.D/2)) * 20;
-                individualScores.E = pE * goals.E;
-
-                let pF = h.F * 6 + Math.floor(h.A/6) * 30;
-                individualScores.F = pF * goals.F;
-
-                let pG = Math.floor(h.A/2) * 7 + Math.min(h.A, h.B, h.C, h.D, h.E, h.F) * 30;
-                individualScores.G = pG * goals.G;
-            }
-
-            // 개별 카드 UI 업데이트
+            const individualScores = calculateIndividualScores();
             cards.forEach(c => {
-                document.getElementById(`score-display-${c}`).innerText = individualScores[c] + "점";
+                document.getElementById(`score-display-${c}`).innerText = individualScores[c] + '점';
             });
 
-            // 총 점수 합산
-            if (isReady) {
-                totalScore = Object.values(individualScores).reduce((a,b) => a+b, 0);
-            }
-            
+            const totalScore = isReady ? Object.values(individualScores).reduce((sum, value) => sum + value, 0) : 0;
             document.getElementById('current-score').innerText = totalScore;
 
-            for (let i=1; i<=4; i++) {
-                document.getElementById(`btn-p${i}`).disabled = !isReady || currentRound[i] >= 4;
+            for (let p = 1; p <= playerCount; p++) {
+                const btn = document.getElementById(`btn-p${p}`);
+                if (btn) btn.disabled = !isReady || currentRound[p] >= roundLimit;
             }
+
+            const undoBtn = document.getElementById('btn-undo');
+            if (undoBtn) undoBtn.disabled = scoreHistory.length === 0;
         }
 
         function addScore(player) {
-            let score = parseInt(document.getElementById('current-score').innerText);
-            let r = currentRound[player];
-            if (r < 4) {
-                scores[player][r] = score;
-                currentRound[player]++;
-                renderTable();
-                
-                // 입력 상태 초기화
-                hand = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
-                goals = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
-                cards.forEach(c => {
-                    document.getElementById(`hand-cnt-${c}`).innerText = 0;
-                    document.getElementById(`goal-cnt-${c}`).innerText = 0;
-                });
-                updateCalc();
+            const score = Number(document.getElementById('current-score').innerText);
+            const roundIndex = currentRound[player];
+
+            if (roundIndex >= roundLimit) return;
+
+            scores[player][roundIndex] = score;
+            currentRound[player]++;
+            scoreHistory.push({ player, roundIndex, score });
+
+            renderTable();
+            resetInputs(false);
+            setStatus(`P${player}의 ${roundIndex + 1}라운드 점수 ${score}점을 기록했습니다.`);
+        }
+
+        function undoLastScore() {
+            if (scoreHistory.length === 0) return;
+
+            const last = scoreHistory.pop();
+            scores[last.player][last.roundIndex] = null;
+            currentRound[last.player] = Math.max(0, currentRound[last.player] - 1);
+            gameEndedAlertShown = false;
+
+            renderTable();
+            updateCalc();
+            setStatus(`P${last.player}의 ${last.roundIndex + 1}라운드 기록을 취소했습니다.`);
+        }
+
+        function resetInputs(showMessage = true) {
+            hand = emptyCardSet();
+            goals = emptyCardSet();
+
+            cards.forEach(c => {
+                document.getElementById(`hand-cnt-${c}`).innerText = 0;
+                document.getElementById(`goal-cnt-${c}`).innerText = 0;
+            });
+
+            updateCalc();
+            if (showMessage) setStatus('손패와 목표 카드 입력을 초기화했습니다.');
+        }
+
+        function resetAll() {
+            hand = emptyCardSet();
+            goals = emptyCardSet();
+            initScores();
+
+            cards.forEach(c => {
+                document.getElementById(`hand-cnt-${c}`).innerText = 0;
+                document.getElementById(`goal-cnt-${c}`).innerText = 0;
+            });
+
+            renderPlayerButtons();
+            renderTable();
+            updateCalc();
+            setStatus('전체 기록을 초기화했습니다.');
+        }
+
+        function getTotals() {
+            const totals = {};
+            for (let p = 1; p <= playerCount; p++) {
+                totals[p] = scores[p].reduce((sum, value) => sum + (value === null ? 0 : value), 0);
             }
+            return totals;
         }
 
         function renderTable() {
-            let table = document.getElementById('score-table');
-            let html = `
-                <tr>
-                    <th>라운드</th>
-                    <th>Player 1</th>
-                    <th>Player 2</th>
-                    <th>Player 3</th>
-                    <th>Player 4</th>
-                </tr>
-            `;
-            
-            let totals = {1:0, 2:0, 3:0, 4:0};
+            const table = document.getElementById('score-table');
+            const totals = getTotals();
 
-            for (let r=0; r<4; r++) {
-                html += `<tr><td>${r+1} 라운드</td>`;
-                for (let p=1; p<=4; p++) {
-                    let s = scores[p][r];
-                    totals[p] += s;
-                    html += `<td>${currentRound[p] > r ? s : '-'}</td>`;
+            let html = '<tr><th>라운드</th>';
+            for (let p = 1; p <= playerCount; p++) {
+                html += `<th>Player ${p}</th>`;
+            }
+            html += '</tr>';
+
+            for (let r = 0; r < roundLimit; r++) {
+                html += `<tr><td>${r + 1} 라운드</td>`;
+                for (let p = 1; p <= playerCount; p++) {
+                    const value = scores[p][r];
+                    html += `<td>${value === null ? '-' : value}</td>`;
                 }
-                html += `</tr>`;
+                html += '</tr>';
             }
 
-            html += `<tr class="total-row"><td>총점</td>`;
-            for (let p=1; p<=4; p++) {
-                let isWinner = totals[p] >= 100 ? ' winner' : '';
+            html += '<tr class="total-row"><td>총점</td>';
+            for (let p = 1; p <= playerCount; p++) {
+                const isWinner = totals[p] >= 100 ? ' winner' : '';
                 html += `<td class="${isWinner}">${totals[p]}</td>`;
             }
-            html += `</tr>`;
-            
+            html += '</tr>';
+
             table.innerHTML = html;
 
-            if (Object.values(totals).some(t => t >= 100)) {
-                setTimeout(() => alert("🎉 누적 100점 이상 플레이어가 발생하여 게임이 종료되었습니다!"), 100);
+            if (!gameEndedAlertShown && Object.values(totals).some(total => total >= 100)) {
+                gameEndedAlertShown = true;
+                setTimeout(() => alert('🎉 누적 100점 이상 플레이어가 발생하여 게임이 종료되었습니다!'), 100);
             }
         }
 
-        renderTable();
+        function setStatus(message) {
+            document.getElementById('status-line').innerText = message || '';
+        }
+
+        init();
     </script>
 </body>
 </html>
