@@ -160,10 +160,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
             background: rgba(255,255,255,0.25);
-            padding: 4px 6px;
-            border-radius: 999px;
+            padding: 5px 6px;
+            border-radius: 12px;
             width: 100%;
             max-width: 96px;
         }
@@ -172,32 +171,25 @@
             background: rgba(0,0,0,0.08);
         }
 
-        .btn-ctrl {
-            background: rgba(255,255,255,0.9);
+        .card-select {
+            width: 100%;
+            min-height: 34px;
             border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
+            border-radius: 9px;
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.94);
+            color: #222;
+            font-size: 1rem;
             font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-            font-size: 1.05rem;
-            line-height: 1;
+            text-align: center;
+            text-align-last: center;
+            cursor: pointer;
+            outline: none;
             touch-action: manipulation;
         }
 
-        .btn-ctrl:active {
-            transform: scale(0.96);
-        }
-
-        .count-val {
-            font-size: 1.1rem;
-            font-weight: 900;
-            min-width: 20px;
-            text-align: center;
+        .card-select:focus {
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.42);
         }
 
         .goal-score-display {
@@ -406,13 +398,12 @@
 
             .controls {
                 max-width: none;
-                padding: 4px 5px;
-                gap: 4px;
+                padding: 5px;
             }
 
-            .btn-ctrl {
-                width: 30px;
-                height: 30px;
+            .card-select {
+                min-height: 38px;
+                font-size: 1.05rem;
             }
 
             .goal-score-display {
@@ -491,6 +482,7 @@
     <script>
         const cards = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
         const emptyCardSet = () => ({ A:0, B:0, C:0, D:0, E:0, F:0, G:0 });
+        const optionHtml = (max) => Array.from({ length: max + 1 }, (_, i) => `<option value="${i}">${i}</option>`).join('');
 
         let hand = emptyCardSet();
         let goals = emptyCardSet();
@@ -517,9 +509,9 @@
                 <div class="card-counter theme-${c}">
                     <div class="card-name">${c}</div>
                     <div class="controls">
-                        <button class="btn-ctrl" type="button" onclick="adjHand('${c}', -1)" aria-label="손패 ${c} 감소">-</button>
-                        <span class="count-val" id="hand-cnt-${c}">0</span>
-                        <button class="btn-ctrl" type="button" onclick="adjHand('${c}', 1)" aria-label="손패 ${c} 증가">+</button>
+                        <select class="card-select" id="hand-cnt-${c}" onchange="setHand('${c}', this.value)" aria-label="손패 ${c} 장수 선택">
+                            ${optionHtml(7)}
+                        </select>
                     </div>
                 </div>
             `).join('');
@@ -528,9 +520,9 @@
                 <div class="card-counter theme-${c}">
                     <div class="card-name">${c}</div>
                     <div class="controls">
-                        <button class="btn-ctrl" type="button" onclick="adjGoal('${c}', -1)" aria-label="목표 ${c} 감소">-</button>
-                        <span class="count-val" id="goal-cnt-${c}">0</span>
-                        <button class="btn-ctrl" type="button" onclick="adjGoal('${c}', 1)" aria-label="목표 ${c} 증가">+</button>
+                        <select class="card-select" id="goal-cnt-${c}" onchange="setGoal('${c}', this.value)" aria-label="목표 ${c} 장수 선택">
+                            ${optionHtml(4)}
+                        </select>
                     </div>
                     <div class="goal-score-display" id="score-display-${c}">0점</div>
                 </div>
@@ -590,23 +582,13 @@
             return Object.values(target).reduce((sum, value) => sum + value, 0);
         }
 
-        function adjHand(card, val) {
-            const currentTotal = totalCards(hand);
-            if (val > 0 && currentTotal >= 7) return;
-            if (val < 0 && hand[card] <= 0) return;
-
-            hand[card] += val;
-            document.getElementById(`hand-cnt-${card}`).innerText = hand[card];
+        function setHand(card, value) {
+            hand[card] = Number(value);
             updateCalc();
         }
 
-        function adjGoal(card, val) {
-            const currentTotal = totalCards(goals);
-            if (val > 0 && currentTotal >= 4) return;
-            if (val < 0 && goals[card] <= 0) return;
-
-            goals[card] += val;
-            document.getElementById(`goal-cnt-${card}`).innerText = goals[card];
+        function setGoal(card, value) {
+            goals[card] = Number(value);
             updateCalc();
         }
 
@@ -711,8 +693,8 @@
             goals = emptyCardSet();
 
             cards.forEach(c => {
-                document.getElementById(`hand-cnt-${c}`).innerText = 0;
-                document.getElementById(`goal-cnt-${c}`).innerText = 0;
+                document.getElementById(`hand-cnt-${c}`).value = 0;
+                document.getElementById(`goal-cnt-${c}`).value = 0;
             });
 
             updateCalc();
@@ -725,8 +707,8 @@
             initScores();
 
             cards.forEach(c => {
-                document.getElementById(`hand-cnt-${c}`).innerText = 0;
-                document.getElementById(`goal-cnt-${c}`).innerText = 0;
+                document.getElementById(`hand-cnt-${c}`).value = 0;
+                document.getElementById(`goal-cnt-${c}`).value = 0;
             });
 
             renderPlayerButtons();
