@@ -231,7 +231,6 @@
             border: 1px solid var(--border-color);
         }
 
-
         .score-breakdown {
             margin: 0 0 13px;
             padding: 12px;
@@ -252,56 +251,62 @@
             color: var(--text-sub);
             font-size: 0.9rem;
             text-align: center;
+            padding: 8px 4px;
         }
 
-        .score-detail-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .score-detail-item {
-            padding: 9px 10px;
-            border: 1px dashed var(--border-color);
+        .breakdown-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            background: #ffffff;
+            background: #fff;
         }
 
-        .score-detail-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 5px;
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
         }
 
-        .score-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 54px;
-            padding: 4px 8px;
-            border-radius: 999px;
-            font-size: 0.82rem;
+        .breakdown-table th,
+        .breakdown-table td {
+            border: 1px solid var(--border-color);
+            padding: 9px 8px;
+            font-size: 0.9rem;
+            vertical-align: top;
+            white-space: normal;
+            text-align: left;
+        }
+
+        .breakdown-table th {
+            background: #fdf6e3;
+            color: var(--primary);
+            text-align: center;
             font-weight: 900;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            width: 110px;
         }
 
-        .score-detail-total {
+        .breakdown-table .score-col {
+            width: 95px;
+            text-align: center;
             font-weight: 900;
             color: var(--primary);
             white-space: nowrap;
         }
 
-        .score-detail-formula {
-            color: var(--text-main);
-            font-size: 0.9rem;
+        .breakdown-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .score-detail-muted {
+        .breakdown-line {
+            color: var(--text-main);
+        }
+
+        .breakdown-note {
+            margin-top: 7px;
+            font-size: 0.82rem;
             color: var(--text-sub);
-            font-size: 0.84rem;
-            margin-top: 2px;
         }
 
         .score-cell-main {
@@ -326,18 +331,36 @@
             list-style-position: inside;
         }
 
-        .table-detail-body {
+        .mini-breakdown {
             margin-top: 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
         }
 
-        .table-detail-row {
-            padding: 5px 6px;
-            border-radius: 8px;
-            background: #fffdfa;
-            border: 1px solid var(--border-color);
+        .mini-breakdown-row {
+            display: grid;
+            grid-template-columns: 82px 1fr 54px;
+            gap: 5px;
+            padding: 6px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mini-breakdown-row:last-child {
+            border-bottom: none;
+        }
+
+        .mini-breakdown-label {
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .mini-breakdown-score {
+            font-weight: 900;
+            color: var(--primary);
+            text-align: right;
+            white-space: nowrap;
         }
 
         .player-actions {
@@ -348,7 +371,7 @@
 
         .utility-actions {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 8px;
             margin-top: 10px;
         }
@@ -416,7 +439,7 @@
             border: 1px solid var(--border-color);
         }
 
-        table {
+        table.score-table {
             width: 100%;
             border-collapse: collapse;
             text-align: center;
@@ -424,15 +447,15 @@
             background: #fff;
         }
 
-        th,
-        td {
+        table.score-table th,
+        table.score-table td {
             border: 1px solid var(--border-color);
             padding: 9px 8px;
             font-size: 0.92rem;
             white-space: nowrap;
         }
 
-        th {
+        table.score-table th {
             background: #fdf6e3;
             color: var(--primary);
             font-weight: 900;
@@ -480,11 +503,11 @@
             }
 
             .player-actions {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             }
 
             .utility-actions {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .btn-player,
@@ -518,14 +541,15 @@
             .goal-score-display {
                 max-width: none;
                 font-size: 0.84rem;
+                padding: 5px 4px;
             }
 
-            table {
-                min-width: 360px;
+            .breakdown-table {
+                min-width: 500px;
             }
 
-            th,
-            td {
+            table.score-table th,
+            table.score-table td {
                 padding: 8px 6px;
                 font-size: 0.86rem;
             }
@@ -535,7 +559,7 @@
 <body>
     <div class="container">
         <h1>🦙 라마 라마 점수 계산기</h1>
-        <p class="subtitle">플레이어 수, 라운드 수를 선택하고 점수를 기록하세요.</p>
+        <p class="subtitle">목표 카드는 유지되고, 점수 기록 후 손패만 초기화됩니다.</p>
 
         <div class="section">
             <div class="section-title">0. 게임 설정</div>
@@ -553,7 +577,7 @@
                     <input id="round-limit" type="number" min="1" max="20" value="4" onchange="changeRoundLimit(this.value)">
                 </div>
             </div>
-            <p class="settings-note">설정을 변경하면 현재까지 기록한 점수는 초기화됩니다. 손패와 목표 카드 입력값은 그대로 유지됩니다.</p>
+            <p class="settings-note">설정을 변경하면 현재까지 기록한 점수만 초기화됩니다. 손패와 목표 카드 선택값은 그대로 유지됩니다.</p>
         </div>
 
         <div class="section">
@@ -570,12 +594,13 @@
 
         <div class="section">
             <div class="section-title">3. 점수 계산 및 기록</div>
-            <div class="calc-result">총 조합 점수: <span id="current-score">0</span>점</div>
+            <div class="calc-result">총 점수: <span id="current-score">0</span>점</div>
             <div class="score-breakdown" id="score-breakdown"></div>
             <div class="player-actions" id="player-actions"></div>
             <div class="utility-actions">
                 <button class="btn-sub" id="btn-undo" onclick="undoLastScore()" disabled>마지막 기록 취소</button>
-                <button class="btn-sub" onclick="resetInputs()">입력 초기화</button>
+                <button class="btn-sub" onclick="resetHandOnly()">손패 초기화</button>
+                <button class="btn-sub" onclick="resetGoalsOnly()">목표카드 초기화</button>
                 <button class="btn-danger" onclick="resetAll()">전체 초기화</button>
             </div>
             <div class="status-line" id="status-line"></div>
@@ -584,7 +609,7 @@
         <div class="section">
             <div class="section-title">📊 전체 점수판 (100점 이상 종료)</div>
             <div class="table-wrapper">
-                <table id="score-table"></table>
+                <table class="score-table" id="score-table"></table>
             </div>
         </div>
     </div>
@@ -599,11 +624,10 @@
         let playerCount = 4;
         let roundLimit = 4;
         let scores = {};
-        let scoreDetails = {};
         let currentRound = {};
         let scoreHistory = [];
-        let latestScoreBreakdown = { individualScores: emptyCardSet(), totalScore: 0, details: [] };
         let gameEndedAlertShown = false;
+        let latestBreakdown = makeEmptyBreakdown();
 
         function init() {
             buildCardInputs();
@@ -649,7 +673,6 @@
 
             for (let p = 1; p <= 4; p++) {
                 scores[p] = Array(roundLimit).fill(null);
-                scoreDetails[p] = Array(roundLimit).fill(null);
                 currentRound[p] = 0;
             }
         }
@@ -705,159 +728,226 @@
             updateCalc();
         }
 
-        function makeScoreDetail(goal, goalCount, parts) {
-            const baseScore = parts.reduce((sum, part) => sum + part.points, 0);
-            const totalScore = baseScore * goalCount;
-            return { goal, goalCount, parts, baseScore, totalScore };
+        function makeEmptyBreakdown() {
+            return {
+                cardTotal: 0,
+                comboTotal: 0,
+                grandTotal: 0,
+                cardLines: [],
+                comboLines: [],
+                selectedCount: 0
+            };
         }
 
-        function calculateScoreBreakdown() {
-            const individualScores = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
-            const details = [];
+        function makeLine(goalCard, goalCount, formula, rawScore, totalScore) {
+            if (goalCount > 1) {
+                return `${goalCard} 목표 ${goalCount}장: ${formula} = ${rawScore}점 × 목표 ${goalCount}장 = ${totalScore}점`;
+            }
+            return `${goalCard} 목표 ${goalCount}장: ${formula} = ${totalScore}점`;
+        }
+
+        function calculateBreakdown() {
+            const breakdown = makeEmptyBreakdown();
             const handReady = totalCards(hand) === 7;
-            if (!handReady) return { individualScores, totalScore: 0, details };
+            if (!handReady) return breakdown;
 
             const h = hand;
 
-            if (goals.A > 0) {
-                const fullSetCount = (h.A >= 1 && h.B >= 1 && h.C >= 1 && h.D >= 1 && h.E >= 1 && h.F >= 1 && h.G >= 1) ? 1 : 0;
-                const parts = [
-                    { label: `A 글자 ${h.A}장 × 1점`, points: h.A * 1 },
-                    { label: `A+B+C+D+E+F+G 조합 ${fullSetCount}개 × 50점`, points: fullSetCount * 50 }
-                ];
-                const detail = makeScoreDetail('A', goals.A, parts);
-                individualScores.A = detail.totalScore;
-                details.push(detail);
-            }
+            const ruleMap = {
+                A: () => {
+                    const cardRaw = h.A * 1;
+                    const rainbow = (h.A >= 1 && h.B >= 1 && h.C >= 1 && h.D >= 1 && h.E >= 1 && h.F >= 1 && h.G >= 1) ? 1 : 0;
+                    const comboRaw = rainbow * 50;
+                    return {
+                        cardFormula: `A 카드 ${h.A}장 × 1점`,
+                        comboFormula: rainbow > 0 ? `A+B+C+D+E+F+G 조합 ${rainbow}개 × 50점` : 'A+B+C+D+E+F+G 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                },
+                B: () => {
+                    const cardRaw = h.B * 2;
+                    const pair = Math.floor(Math.min(h.A / 2, h.C / 2));
+                    const comboRaw = pair * 15;
+                    return {
+                        cardFormula: `B 카드 ${h.B}장 × 2점`,
+                        comboFormula: pair > 0 ? `A 2장+C 2장 조합 ${pair}개 × 15점` : 'A 2장+C 2장 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                },
+                C: () => {
+                    const cardRaw = h.C * 3;
+                    const pair = Math.floor(Math.min(h.A / 2, h.B / 2));
+                    const comboRaw = pair * 10;
+                    return {
+                        cardFormula: `C 카드 ${h.C}장 × 3점`,
+                        comboFormula: pair > 0 ? `A 2장+B 2장 조합 ${pair}개 × 10점` : 'A 2장+B 2장 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                },
+                D: () => {
+                    const cardRaw = h.D * 4;
+                    const ag = Math.min(h.A, h.G);
+                    const ce = Math.min(h.C, h.E);
+                    const bf = Math.min(h.B, h.F);
+                    const comboCount = ag + ce + bf;
+                    const comboRaw = comboCount * 5;
+                    const pieces = [];
+                    if (ag > 0) pieces.push(`A+G ${ag}개`);
+                    if (ce > 0) pieces.push(`C+E ${ce}개`);
+                    if (bf > 0) pieces.push(`B+F ${bf}개`);
+                    return {
+                        cardFormula: `D 카드 ${h.D}장 × 4점`,
+                        comboFormula: comboCount > 0 ? `${pieces.join(', ')} × 5점` : 'A+G, C+E, B+F 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                },
+                E: () => {
+                    const cardRaw = h.E * 5;
+                    const pair = Math.floor(Math.min(h.B / 2, h.D / 2));
+                    const comboRaw = pair * 20;
+                    return {
+                        cardFormula: `E 카드 ${h.E}장 × 5점`,
+                        comboFormula: pair > 0 ? `B 2장+D 2장 조합 ${pair}개 × 20점` : 'B 2장+D 2장 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                },
+                F: () => {
+                    const cardRaw = h.F * 6;
+                    const sixA = Math.floor(h.A / 6);
+                    const comboRaw = sixA * 30;
+                    return {
+                        cardFormula: `F 카드 ${h.F}장 × 6점`,
+                        comboFormula: sixA > 0 ? `A 6장 조합 ${sixA}개 × 30점` : 'A 6장 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                },
+                G: () => {
+                    const aPair = Math.floor(h.A / 2);
+                    const cardRaw = aPair * 7;
+                    const sixKinds = Math.min(h.A, h.B, h.C, h.D, h.E, h.F);
+                    const comboRaw = sixKinds * 30;
+                    return {
+                        cardFormula: `A 2장 묶음 ${aPair}개 × 7점`,
+                        comboFormula: sixKinds > 0 ? `A+B+C+D+E+F 조합 ${sixKinds}개 × 30점` : 'A+B+C+D+E+F 조합 없음',
+                        cardRaw,
+                        comboRaw
+                    };
+                }
+            };
 
-            if (goals.B > 0) {
-                const comboCount = Math.floor(Math.min(h.A / 2, h.C / 2));
-                const parts = [
-                    { label: `B 글자 ${h.B}장 × 2점`, points: h.B * 2 },
-                    { label: `A 2장 + C 2장 조합 ${comboCount}개 × 15점`, points: comboCount * 15 }
-                ];
-                const detail = makeScoreDetail('B', goals.B, parts);
-                individualScores.B = detail.totalScore;
-                details.push(detail);
-            }
+            cards.forEach(c => {
+                const goalCount = goals[c];
+                if (goalCount <= 0) return;
 
-            if (goals.C > 0) {
-                const comboCount = Math.floor(Math.min(h.A / 2, h.B / 2));
-                const parts = [
-                    { label: `C 글자 ${h.C}장 × 3점`, points: h.C * 3 },
-                    { label: `A 2장 + B 2장 조합 ${comboCount}개 × 10점`, points: comboCount * 10 }
-                ];
-                const detail = makeScoreDetail('C', goals.C, parts);
-                individualScores.C = detail.totalScore;
-                details.push(detail);
-            }
+                const result = ruleMap[c]();
+                const cardScore = result.cardRaw * goalCount;
+                const comboScore = result.comboRaw * goalCount;
 
-            if (goals.D > 0) {
-                const agCount = Math.min(h.A, h.G);
-                const ceCount = Math.min(h.C, h.E);
-                const bfCount = Math.min(h.B, h.F);
-                const parts = [
-                    { label: `D 글자 ${h.D}장 × 4점`, points: h.D * 4 },
-                    { label: `A+G 조합 ${agCount}개 × 5점`, points: agCount * 5 },
-                    { label: `C+E 조합 ${ceCount}개 × 5점`, points: ceCount * 5 },
-                    { label: `B+F 조합 ${bfCount}개 × 5점`, points: bfCount * 5 }
-                ];
-                const detail = makeScoreDetail('D', goals.D, parts);
-                individualScores.D = detail.totalScore;
-                details.push(detail);
-            }
+                breakdown.cardTotal += cardScore;
+                breakdown.comboTotal += comboScore;
+                breakdown.selectedCount += goalCount;
+                breakdown.cardLines.push(makeLine(c, goalCount, result.cardFormula, result.cardRaw, cardScore));
+                breakdown.comboLines.push(makeLine(c, goalCount, result.comboFormula, result.comboRaw, comboScore));
+            });
 
-            if (goals.E > 0) {
-                const comboCount = Math.floor(Math.min(h.B / 2, h.D / 2));
-                const parts = [
-                    { label: `E 글자 ${h.E}장 × 5점`, points: h.E * 5 },
-                    { label: `B 2장 + D 2장 조합 ${comboCount}개 × 20점`, points: comboCount * 20 }
-                ];
-                const detail = makeScoreDetail('E', goals.E, parts);
-                individualScores.E = detail.totalScore;
-                details.push(detail);
-            }
-
-            if (goals.F > 0) {
-                const comboCount = Math.floor(h.A / 6);
-                const parts = [
-                    { label: `F 글자 ${h.F}장 × 6점`, points: h.F * 6 },
-                    { label: `A 6장 조합 ${comboCount}개 × 30점`, points: comboCount * 30 }
-                ];
-                const detail = makeScoreDetail('F', goals.F, parts);
-                individualScores.F = detail.totalScore;
-                details.push(detail);
-            }
-
-            if (goals.G > 0) {
-                const pairCount = Math.floor(h.A / 2);
-                const sixSetCount = Math.min(h.A, h.B, h.C, h.D, h.E, h.F);
-                const parts = [
-                    { label: `A 2장 조합 ${pairCount}개 × 7점`, points: pairCount * 7 },
-                    { label: `A+B+C+D+E+F 조합 ${sixSetCount}개 × 30점`, points: sixSetCount * 30 }
-                ];
-                const detail = makeScoreDetail('G', goals.G, parts);
-                individualScores.G = detail.totalScore;
-                details.push(detail);
-            }
-
-            const totalScore = Object.values(individualScores).reduce((sum, value) => sum + value, 0);
-            return { individualScores, totalScore, details };
+            breakdown.grandTotal = breakdown.cardTotal + breakdown.comboTotal;
+            return breakdown;
         }
 
-        function renderBreakdown(isReady, breakdown) {
-            const wrap = document.getElementById('score-breakdown');
-            if (!wrap) return;
+        function getIndividualScoresFromBreakdown() {
+            const individualScores = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
+            const handReady = totalCards(hand) === 7;
+            if (!handReady) return individualScores;
 
-            if (!isReady) {
-                wrap.innerHTML = '<div class="score-breakdown-empty">손패 7장과 목표카드 1~4장을 맞추면 계산 조합이 여기에 표시됩니다.</div>';
+            const h = hand;
+            individualScores.A = (h.A * 1 + ((h.A >= 1 && h.B >= 1 && h.C >= 1 && h.D >= 1 && h.E >= 1 && h.F >= 1 && h.G >= 1) ? 50 : 0)) * goals.A;
+            individualScores.B = (h.B * 2 + Math.floor(Math.min(h.A / 2, h.C / 2)) * 15) * goals.B;
+            individualScores.C = (h.C * 3 + Math.floor(Math.min(h.A / 2, h.B / 2)) * 10) * goals.C;
+            individualScores.D = (h.D * 4 + Math.min(h.A, h.G) * 5 + Math.min(h.C, h.E) * 5 + Math.min(h.B, h.F) * 5) * goals.D;
+            individualScores.E = (h.E * 5 + Math.floor(Math.min(h.B / 2, h.D / 2)) * 20) * goals.E;
+            individualScores.F = (h.F * 6 + Math.floor(h.A / 6) * 30) * goals.F;
+            individualScores.G = (Math.floor(h.A / 2) * 7 + Math.min(h.A, h.B, h.C, h.D, h.E, h.F) * 30) * goals.G;
+            return individualScores;
+        }
+
+        function renderBreakdown(targetId, breakdown) {
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            if (totalCards(hand) !== 7) {
+                target.innerHTML = `
+                    <div class="score-breakdown-title">계산 상세</div>
+                    <div class="score-breakdown-empty">손패 7장을 맞추면 계산 상세가 표시됩니다.</div>
+                `;
                 return;
             }
 
-            if (!breakdown.details.length) {
-                wrap.innerHTML = '<div class="score-breakdown-empty">선택된 목표카드가 없습니다.</div>';
+            if (totalCards(goals) === 0) {
+                target.innerHTML = `
+                    <div class="score-breakdown-title">계산 상세</div>
+                    <div class="score-breakdown-empty">목표카드를 1장 이상 선택하면 계산 상세가 표시됩니다.</div>
+                `;
                 return;
             }
 
-            wrap.innerHTML = `
+            target.innerHTML = `
                 <div class="score-breakdown-title">계산 상세</div>
-                <div class="score-detail-list">
-                    ${breakdown.details.map(renderDetailItem).join('')}
+                ${breakdownToTableHtml(breakdown)}
+                <div class="breakdown-note">카드갯수 점수와 조합 점수를 따로 계산한 뒤 합산합니다.</div>
+            `;
+        }
+
+        function breakdownToTableHtml(breakdown) {
+            return `
+                <div class="breakdown-table-wrap">
+                    <table class="breakdown-table">
+                        <tr>
+                            <th>구분</th>
+                            <th>계산 내용</th>
+                            <th class="score-col">점수</th>
+                        </tr>
+                        <tr>
+                            <th>카드갯수</th>
+                            <td><div class="breakdown-lines">${linesToHtml(breakdown.cardLines)}</div></td>
+                            <td class="score-col">${breakdown.cardTotal}점</td>
+                        </tr>
+                        <tr>
+                            <th>조합</th>
+                            <td><div class="breakdown-lines">${linesToHtml(breakdown.comboLines)}</div></td>
+                            <td class="score-col">${breakdown.comboTotal}점</td>
+                        </tr>
+                    </table>
                 </div>
             `;
         }
 
-        function renderDetailItem(detail) {
-            const formula = detail.parts.map(part => `${part.label} = ${part.points}점`).join(' + ');
-            const multiplierText = detail.goalCount > 1
-                ? `<div class="score-detail-muted">목표 ${detail.goal} 카드 ${detail.goalCount}장 선택: ${detail.baseScore}점 × ${detail.goalCount}장 = ${detail.totalScore}점</div>`
-                : `<div class="score-detail-muted">목표 ${detail.goal} 카드 1장 선택: ${detail.baseScore}점</div>`;
-
-            return `
-                <div class="score-detail-item">
-                    <div class="score-detail-head">
-                        <span class="score-badge theme-${detail.goal}">${detail.goal} 목표</span>
-                        <span class="score-detail-total">${detail.totalScore}점</span>
-                    </div>
-                    <div class="score-detail-formula">${formula}</div>
-                    ${multiplierText}
-                </div>
-            `;
+        function linesToHtml(lines) {
+            if (!lines || lines.length === 0) return '<div class="breakdown-line">선택된 목표카드가 없습니다.</div>';
+            return lines.map(line => `<div class="breakdown-line">${escapeHtml(line)}</div>`).join('');
         }
 
-        function renderTableDetail(details) {
-            if (!details || !details.length) return '';
+        function miniBreakdownHtml(breakdown) {
+            const cardText = breakdown.cardLines.length ? breakdown.cardLines.join(' / ') : '없음';
+            const comboText = breakdown.comboLines.length ? breakdown.comboLines.join(' / ') : '없음';
             return `
-                <details class="table-detail">
-                    <summary>상세</summary>
-                    <div class="table-detail-body">
-                        ${details.map(detail => {
-                            const formula = detail.parts.map(part => `${part.label} = ${part.points}점`).join(' + ');
-                            const multi = detail.goalCount > 1 ? ` / ${detail.baseScore}점 × ${detail.goalCount}장` : '';
-                            return `<div class="table-detail-row"><strong>${detail.goal} 목표 ${detail.totalScore}점</strong>${multi}<br>${formula}</div>`;
-                        }).join('')}
+                <div class="mini-breakdown">
+                    <div class="mini-breakdown-row">
+                        <div class="mini-breakdown-label">카드갯수</div>
+                        <div>${escapeHtml(cardText)}</div>
+                        <div class="mini-breakdown-score">${breakdown.cardTotal}점</div>
                     </div>
-                </details>
+                    <div class="mini-breakdown-row">
+                        <div class="mini-breakdown-label">조합</div>
+                        <div>${escapeHtml(comboText)}</div>
+                        <div class="mini-breakdown-score">${breakdown.comboTotal}점</div>
+                    </div>
+                </div>
             `;
         }
 
@@ -878,18 +968,18 @@
 
             goalTracker.className = goalReady ? 'total-tracker success' : 'total-tracker error';
             goalTracker.innerText = goalReady
-                ? `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (선택 완료)`
+                ? `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (선택 완료 · 기록 후에도 유지됨)`
                 : `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (1~4장을 선택해주세요)`;
 
-            latestScoreBreakdown = calculateScoreBreakdown();
-            const individualScores = latestScoreBreakdown.individualScores;
+            const individualScores = getIndividualScoresFromBreakdown();
             cards.forEach(c => {
                 document.getElementById(`score-display-${c}`).innerText = individualScores[c] + '점';
             });
 
-            const totalScore = isReady ? latestScoreBreakdown.totalScore : 0;
+            latestBreakdown = calculateBreakdown();
+            const totalScore = isReady ? latestBreakdown.grandTotal : 0;
             document.getElementById('current-score').innerText = totalScore;
-            renderBreakdown(isReady, latestScoreBreakdown);
+            renderBreakdown('score-breakdown', latestBreakdown);
 
             for (let p = 1; p <= playerCount; p++) {
                 const btn = document.getElementById(`btn-p${p}`);
@@ -900,21 +990,35 @@
             if (undoBtn) undoBtn.disabled = scoreHistory.length === 0;
         }
 
+        function cloneBreakdown(breakdown) {
+            return {
+                cardTotal: breakdown.cardTotal,
+                comboTotal: breakdown.comboTotal,
+                grandTotal: breakdown.grandTotal,
+                cardLines: [...breakdown.cardLines],
+                comboLines: [...breakdown.comboLines],
+                selectedCount: breakdown.selectedCount
+            };
+        }
+
         function addScore(player) {
             const score = Number(document.getElementById('current-score').innerText);
             const roundIndex = currentRound[player];
 
             if (roundIndex >= roundLimit) return;
 
-            const details = JSON.parse(JSON.stringify(latestScoreBreakdown.details));
-            scores[player][roundIndex] = score;
-            scoreDetails[player][roundIndex] = details;
+            const record = {
+                score,
+                breakdown: cloneBreakdown(latestBreakdown)
+            };
+
+            scores[player][roundIndex] = record;
             currentRound[player]++;
-            scoreHistory.push({ player, roundIndex, score, details });
+            scoreHistory.push({ player, roundIndex, record });
 
             renderTable();
-            resetInputs(false);
-            setStatus(`P${player}의 ${roundIndex + 1}라운드 점수 ${score}점을 기록했습니다.`);
+            resetHandOnly(false);
+            setStatus(`P${player}의 ${roundIndex + 1}라운드 점수 ${score}점을 기록했습니다. 목표카드는 유지했습니다.`);
         }
 
         function undoLastScore() {
@@ -922,7 +1026,6 @@
 
             const last = scoreHistory.pop();
             scores[last.player][last.roundIndex] = null;
-            scoreDetails[last.player][last.roundIndex] = null;
             currentRound[last.player] = Math.max(0, currentRound[last.player] - 1);
             gameEndedAlertShown = false;
 
@@ -931,17 +1034,26 @@
             setStatus(`P${last.player}의 ${last.roundIndex + 1}라운드 기록을 취소했습니다.`);
         }
 
-        function resetInputs(showMessage = true) {
+        function resetHandOnly(showMessage = true) {
             hand = emptyCardSet();
-            goals = emptyCardSet();
 
             cards.forEach(c => {
                 document.getElementById(`hand-cnt-${c}`).value = 0;
+            });
+
+            updateCalc();
+            if (showMessage) setStatus('손패만 초기화했습니다. 목표카드는 그대로 유지됩니다.');
+        }
+
+        function resetGoalsOnly(showMessage = true) {
+            goals = emptyCardSet();
+
+            cards.forEach(c => {
                 document.getElementById(`goal-cnt-${c}`).value = 0;
             });
 
             updateCalc();
-            if (showMessage) setStatus('손패와 목표 카드 입력을 초기화했습니다.');
+            if (showMessage) setStatus('목표카드만 초기화했습니다.');
         }
 
         function resetAll() {
@@ -957,13 +1069,13 @@
             renderPlayerButtons();
             renderTable();
             updateCalc();
-            setStatus('전체 기록을 초기화했습니다.');
+            setStatus('전체 기록, 손패, 목표카드를 모두 초기화했습니다.');
         }
 
         function getTotals() {
             const totals = {};
             for (let p = 1; p <= playerCount; p++) {
-                totals[p] = scores[p].reduce((sum, value) => sum + (value === null ? 0 : value), 0);
+                totals[p] = scores[p].reduce((sum, value) => sum + (value === null ? 0 : value.score), 0);
             }
             return totals;
         }
@@ -981,9 +1093,20 @@
             for (let r = 0; r < roundLimit; r++) {
                 html += `<tr><td>${r + 1} 라운드</td>`;
                 for (let p = 1; p <= playerCount; p++) {
-                    const value = scores[p][r];
-                    const detail = scoreDetails[p][r];
-                    html += `<td>${value === null ? '-' : `<div class="score-cell-main">${value}</div>${renderTableDetail(detail)}`}</td>`;
+                    const record = scores[p][r];
+                    if (record === null) {
+                        html += '<td>-</td>';
+                    } else {
+                        html += `
+                            <td>
+                                <div class="score-cell-main">${record.score}점</div>
+                                <details class="table-detail">
+                                    <summary>상세</summary>
+                                    ${miniBreakdownHtml(record.breakdown)}
+                                </details>
+                            </td>
+                        `;
+                    }
                 }
                 html += '</tr>';
             }
@@ -991,7 +1114,7 @@
             html += '<tr class="total-row"><td>총점</td>';
             for (let p = 1; p <= playerCount; p++) {
                 const isWinner = totals[p] >= 100 ? ' winner' : '';
-                html += `<td class="${isWinner}">${totals[p]}</td>`;
+                html += `<td class="${isWinner}">${totals[p]}점</td>`;
             }
             html += '</tr>';
 
@@ -1005,6 +1128,15 @@
 
         function setStatus(message) {
             document.getElementById('status-line').innerText = message || '';
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
         }
 
         init();
