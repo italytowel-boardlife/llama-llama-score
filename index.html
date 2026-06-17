@@ -231,6 +231,115 @@
             border: 1px solid var(--border-color);
         }
 
+
+        .score-breakdown {
+            margin: 0 0 13px;
+            padding: 12px;
+            background: #fffdfa;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            line-height: 1.45;
+        }
+
+        .score-breakdown-title {
+            font-size: 0.98rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .score-breakdown-empty {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .score-detail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .score-detail-item {
+            padding: 9px 10px;
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .score-detail-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 54px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 900;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .score-detail-total {
+            font-weight: 900;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .score-detail-formula {
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        .score-detail-muted {
+            color: var(--text-sub);
+            font-size: 0.84rem;
+            margin-top: 2px;
+        }
+
+        .score-cell-main {
+            font-weight: 900;
+            margin-bottom: 2px;
+        }
+
+        .table-detail {
+            margin-top: 4px;
+            text-align: left;
+            white-space: normal;
+            color: var(--text-sub);
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .table-detail summary {
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 900;
+            text-align: center;
+            list-style-position: inside;
+        }
+
+        .table-detail-body {
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .table-detail-row {
+            padding: 5px 6px;
+            border-radius: 8px;
+            background: #fffdfa;
+            border: 1px solid var(--border-color);
+        }
+
         .player-actions {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -462,6 +571,7 @@
         <div class="section">
             <div class="section-title">3. 점수 계산 및 기록</div>
             <div class="calc-result">총 조합 점수: <span id="current-score">0</span>점</div>
+            <div class="score-breakdown" id="score-breakdown"></div>
             <div class="player-actions" id="player-actions"></div>
             <div class="utility-actions">
                 <button class="btn-sub" id="btn-undo" onclick="undoLastScore()" disabled>마지막 기록 취소</button>
@@ -489,8 +599,10 @@
         let playerCount = 4;
         let roundLimit = 4;
         let scores = {};
+        let scoreDetails = {};
         let currentRound = {};
         let scoreHistory = [];
+        let latestScoreBreakdown = { individualScores: emptyCardSet(), totalScore: 0, details: [] };
         let gameEndedAlertShown = false;
 
         function init() {
@@ -537,6 +649,7 @@
 
             for (let p = 1; p <= 4; p++) {
                 scores[p] = Array(roundLimit).fill(null);
+                scoreDetails[p] = Array(roundLimit).fill(null);
                 currentRound[p] = 0;
             }
         }
@@ -592,35 +705,160 @@
             updateCalc();
         }
 
-        function calculateIndividualScores() {
+        function makeScoreDetail(goal, goalCount, parts) {
+            const baseScore = parts.reduce((sum, part) => sum + part.points, 0);
+            const totalScore = baseScore * goalCount;
+            return { goal, goalCount, parts, baseScore, totalScore };
+        }
+
+        function calculateScoreBreakdown() {
             const individualScores = { A:0, B:0, C:0, D:0, E:0, F:0, G:0 };
+            const details = [];
             const handReady = totalCards(hand) === 7;
-            if (!handReady) return individualScores;
+            if (!handReady) return { individualScores, totalScore: 0, details };
 
             const h = hand;
 
-            const pA = h.A * 1 + ((h.A >= 1 && h.B >= 1 && h.C >= 1 && h.D >= 1 && h.E >= 1 && h.F >= 1 && h.G >= 1) ? 50 : 0);
-            individualScores.A = pA * goals.A;
+            if (goals.A > 0) {
+                const fullSetCount = (h.A >= 1 && h.B >= 1 && h.C >= 1 && h.D >= 1 && h.E >= 1 && h.F >= 1 && h.G >= 1) ? 1 : 0;
+                const parts = [
+                    { label: `A 글자 ${h.A}장 × 1점`, points: h.A * 1 },
+                    { label: `A+B+C+D+E+F+G 조합 ${fullSetCount}개 × 50점`, points: fullSetCount * 50 }
+                ];
+                const detail = makeScoreDetail('A', goals.A, parts);
+                individualScores.A = detail.totalScore;
+                details.push(detail);
+            }
 
-            const pB = h.B * 2 + Math.floor(Math.min(h.A / 2, h.C / 2)) * 15;
-            individualScores.B = pB * goals.B;
+            if (goals.B > 0) {
+                const comboCount = Math.floor(Math.min(h.A / 2, h.C / 2));
+                const parts = [
+                    { label: `B 글자 ${h.B}장 × 2점`, points: h.B * 2 },
+                    { label: `A 2장 + C 2장 조합 ${comboCount}개 × 15점`, points: comboCount * 15 }
+                ];
+                const detail = makeScoreDetail('B', goals.B, parts);
+                individualScores.B = detail.totalScore;
+                details.push(detail);
+            }
 
-            const pC = h.C * 3 + Math.floor(Math.min(h.A / 2, h.B / 2)) * 10;
-            individualScores.C = pC * goals.C;
+            if (goals.C > 0) {
+                const comboCount = Math.floor(Math.min(h.A / 2, h.B / 2));
+                const parts = [
+                    { label: `C 글자 ${h.C}장 × 3점`, points: h.C * 3 },
+                    { label: `A 2장 + B 2장 조합 ${comboCount}개 × 10점`, points: comboCount * 10 }
+                ];
+                const detail = makeScoreDetail('C', goals.C, parts);
+                individualScores.C = detail.totalScore;
+                details.push(detail);
+            }
 
-            const pD = h.D * 4 + Math.min(h.A, h.G) * 5 + Math.min(h.C, h.E) * 5 + Math.min(h.B, h.F) * 5;
-            individualScores.D = pD * goals.D;
+            if (goals.D > 0) {
+                const agCount = Math.min(h.A, h.G);
+                const ceCount = Math.min(h.C, h.E);
+                const bfCount = Math.min(h.B, h.F);
+                const parts = [
+                    { label: `D 글자 ${h.D}장 × 4점`, points: h.D * 4 },
+                    { label: `A+G 조합 ${agCount}개 × 5점`, points: agCount * 5 },
+                    { label: `C+E 조합 ${ceCount}개 × 5점`, points: ceCount * 5 },
+                    { label: `B+F 조합 ${bfCount}개 × 5점`, points: bfCount * 5 }
+                ];
+                const detail = makeScoreDetail('D', goals.D, parts);
+                individualScores.D = detail.totalScore;
+                details.push(detail);
+            }
 
-            const pE = h.E * 5 + Math.floor(Math.min(h.B / 2, h.D / 2)) * 20;
-            individualScores.E = pE * goals.E;
+            if (goals.E > 0) {
+                const comboCount = Math.floor(Math.min(h.B / 2, h.D / 2));
+                const parts = [
+                    { label: `E 글자 ${h.E}장 × 5점`, points: h.E * 5 },
+                    { label: `B 2장 + D 2장 조합 ${comboCount}개 × 20점`, points: comboCount * 20 }
+                ];
+                const detail = makeScoreDetail('E', goals.E, parts);
+                individualScores.E = detail.totalScore;
+                details.push(detail);
+            }
 
-            const pF = h.F * 6 + Math.floor(h.A / 6) * 30;
-            individualScores.F = pF * goals.F;
+            if (goals.F > 0) {
+                const comboCount = Math.floor(h.A / 6);
+                const parts = [
+                    { label: `F 글자 ${h.F}장 × 6점`, points: h.F * 6 },
+                    { label: `A 6장 조합 ${comboCount}개 × 30점`, points: comboCount * 30 }
+                ];
+                const detail = makeScoreDetail('F', goals.F, parts);
+                individualScores.F = detail.totalScore;
+                details.push(detail);
+            }
 
-            const pG = Math.floor(h.A / 2) * 7 + Math.min(h.A, h.B, h.C, h.D, h.E, h.F) * 30;
-            individualScores.G = pG * goals.G;
+            if (goals.G > 0) {
+                const pairCount = Math.floor(h.A / 2);
+                const sixSetCount = Math.min(h.A, h.B, h.C, h.D, h.E, h.F);
+                const parts = [
+                    { label: `A 2장 조합 ${pairCount}개 × 7점`, points: pairCount * 7 },
+                    { label: `A+B+C+D+E+F 조합 ${sixSetCount}개 × 30점`, points: sixSetCount * 30 }
+                ];
+                const detail = makeScoreDetail('G', goals.G, parts);
+                individualScores.G = detail.totalScore;
+                details.push(detail);
+            }
 
-            return individualScores;
+            const totalScore = Object.values(individualScores).reduce((sum, value) => sum + value, 0);
+            return { individualScores, totalScore, details };
+        }
+
+        function renderBreakdown(isReady, breakdown) {
+            const wrap = document.getElementById('score-breakdown');
+            if (!wrap) return;
+
+            if (!isReady) {
+                wrap.innerHTML = '<div class="score-breakdown-empty">손패 7장과 목표카드 1~4장을 맞추면 계산 조합이 여기에 표시됩니다.</div>';
+                return;
+            }
+
+            if (!breakdown.details.length) {
+                wrap.innerHTML = '<div class="score-breakdown-empty">선택된 목표카드가 없습니다.</div>';
+                return;
+            }
+
+            wrap.innerHTML = `
+                <div class="score-breakdown-title">계산 상세</div>
+                <div class="score-detail-list">
+                    ${breakdown.details.map(renderDetailItem).join('')}
+                </div>
+            `;
+        }
+
+        function renderDetailItem(detail) {
+            const formula = detail.parts.map(part => `${part.label} = ${part.points}점`).join(' + ');
+            const multiplierText = detail.goalCount > 1
+                ? `<div class="score-detail-muted">목표 ${detail.goal} 카드 ${detail.goalCount}장 선택: ${detail.baseScore}점 × ${detail.goalCount}장 = ${detail.totalScore}점</div>`
+                : `<div class="score-detail-muted">목표 ${detail.goal} 카드 1장 선택: ${detail.baseScore}점</div>`;
+
+            return `
+                <div class="score-detail-item">
+                    <div class="score-detail-head">
+                        <span class="score-badge theme-${detail.goal}">${detail.goal} 목표</span>
+                        <span class="score-detail-total">${detail.totalScore}점</span>
+                    </div>
+                    <div class="score-detail-formula">${formula}</div>
+                    ${multiplierText}
+                </div>
+            `;
+        }
+
+        function renderTableDetail(details) {
+            if (!details || !details.length) return '';
+            return `
+                <details class="table-detail">
+                    <summary>상세</summary>
+                    <div class="table-detail-body">
+                        ${details.map(detail => {
+                            const formula = detail.parts.map(part => `${part.label} = ${part.points}점`).join(' + ');
+                            const multi = detail.goalCount > 1 ? ` / ${detail.baseScore}점 × ${detail.goalCount}장` : '';
+                            return `<div class="table-detail-row"><strong>${detail.goal} 목표 ${detail.totalScore}점</strong>${multi}<br>${formula}</div>`;
+                        }).join('')}
+                    </div>
+                </details>
+            `;
         }
 
         function updateCalc() {
@@ -643,13 +881,15 @@
                 ? `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (선택 완료)`
                 : `현재 선택된 목표 카드: ${totalGoals}장 / 4장 (1~4장을 선택해주세요)`;
 
-            const individualScores = calculateIndividualScores();
+            latestScoreBreakdown = calculateScoreBreakdown();
+            const individualScores = latestScoreBreakdown.individualScores;
             cards.forEach(c => {
                 document.getElementById(`score-display-${c}`).innerText = individualScores[c] + '점';
             });
 
-            const totalScore = isReady ? Object.values(individualScores).reduce((sum, value) => sum + value, 0) : 0;
+            const totalScore = isReady ? latestScoreBreakdown.totalScore : 0;
             document.getElementById('current-score').innerText = totalScore;
+            renderBreakdown(isReady, latestScoreBreakdown);
 
             for (let p = 1; p <= playerCount; p++) {
                 const btn = document.getElementById(`btn-p${p}`);
@@ -666,9 +906,11 @@
 
             if (roundIndex >= roundLimit) return;
 
+            const details = JSON.parse(JSON.stringify(latestScoreBreakdown.details));
             scores[player][roundIndex] = score;
+            scoreDetails[player][roundIndex] = details;
             currentRound[player]++;
-            scoreHistory.push({ player, roundIndex, score });
+            scoreHistory.push({ player, roundIndex, score, details });
 
             renderTable();
             resetInputs(false);
@@ -680,6 +922,7 @@
 
             const last = scoreHistory.pop();
             scores[last.player][last.roundIndex] = null;
+            scoreDetails[last.player][last.roundIndex] = null;
             currentRound[last.player] = Math.max(0, currentRound[last.player] - 1);
             gameEndedAlertShown = false;
 
@@ -739,7 +982,8 @@
                 html += `<tr><td>${r + 1} 라운드</td>`;
                 for (let p = 1; p <= playerCount; p++) {
                     const value = scores[p][r];
-                    html += `<td>${value === null ? '-' : value}</td>`;
+                    const detail = scoreDetails[p][r];
+                    html += `<td>${value === null ? '-' : `<div class="score-cell-main">${value}</div>${renderTableDetail(detail)}`}</td>`;
                 }
                 html += '</tr>';
             }
